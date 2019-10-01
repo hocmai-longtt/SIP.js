@@ -80,7 +80,7 @@ export class Simple extends EventEmitter {
     } else if (browserUa.indexOf("firefox") > -1 && browserUa.indexOf("chrome") < 0) {
       isFirefox = true;
     }
-    const sessionDescriptionHandlerFactoryOptions: any = {};
+    const sessionDescriptionHandlerFactoryOptions: any = this.options.ua.sessionDescriptionHandlerFactoryOptions || {};
     if (isSafari) {
       sessionDescriptionHandlerFactoryOptions.modifiers = [Modifiers.stripG722];
     }
@@ -104,7 +104,9 @@ export class Simple extends EventEmitter {
       // Undocumented "Advanced" Options
       userAgentString:   this.options.ua.userAgentString,
       // Fixed Options
-      register:          true,
+      hackWssInTransport: this.options.ua.hackWssInTransport || false,
+      forceRport: this.options.ua.forceRport || false,
+      register: this.options.ua.register || true,
       sessionDescriptionHandlerFactoryOptions,
       transportOptions: {
         traceSip: this.options.ua.traceSip,
