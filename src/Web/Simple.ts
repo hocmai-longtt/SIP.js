@@ -219,7 +219,7 @@ export class Simple extends EventEmitter {
       return;
     }
     if (this.state !== SimpleStatus.STATUS_CONNECTED) {
-      return (this.session as InviteClientContext).cancel();
+      return (this.session as InviteClientContext).terminate();
     } else if (this.session) {
       return (this.session.bye() as InviteServerContext | InviteClientContext);
     }
