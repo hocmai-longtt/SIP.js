@@ -1279,7 +1279,21 @@ export class InviteServerContext extends Session implements ServerContext {
     if (this.sessionDescriptionHandler) {
       return this.sessionDescriptionHandler;
     }
-    return this.sessionDescriptionHandlerFactory(this, this.ua.configuration.sessionDescriptionHandlerFactoryOptions);
+
+    if (!Object.keys(this.ua.configuration.sessionDescriptionHandlerFactoryOptions || {}).length) {
+      this.ua.configuration.sessionDescriptionHandlerFactoryOptions = {
+        peerConnectionOptions: {
+          rtcConfiguration: {
+            iceTransportPolicy: "all"
+          }
+        }
+      };
+    }
+
+    const sessionDHFOptions = JSON.parse(JSON.stringify(this.ua.configuration.sessionDescriptionHandlerFactoryOptions));
+    sessionDHFOptions.peerConnectionOptions.rtcConfiguration.iceTransportPolicy = "relay";
+
+    return this.sessionDescriptionHandlerFactory(this, sessionDHFOptions);
   }
 
   protected generateResponseOfferAnswer(
