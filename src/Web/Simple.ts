@@ -373,11 +373,11 @@ export class Simple extends EventEmitter {
     this.state = SimpleStatus.STATUS_NEW;
     this.emit("new", this.session);
 
-    this.session.on("progress", () => this.onProgress());
-    this.session.on("accepted", () => this.onAccepted());
-    this.session.on("rejected", () => this.onEnded());
-    this.session.on("failed", () => this.onFailed());
-    this.session.on("terminated", () => this.onEnded());
+    this.session.on("progress", (message) => this.onProgress(message));
+    this.session.on("accepted", (response, cause) => this.onAccepted(response, cause));
+    this.session.on("rejected", (response, cause) => this.onEnded(response, cause));
+    this.session.on("failed", (response, cause) => this.onFailed(response, cause));
+    this.session.on("terminated", (message, cause) => this.onEnded(message, cause));
   }
 
   private destroyMedia(): void {
@@ -410,7 +410,7 @@ export class Simple extends EventEmitter {
     }
   }
 
-  private onAccepted(): void {
+  private onAccepted(response: any, cause: any): void {
     if (!this.session) {
       this.logger.warn("No session for accepting");
       return;
@@ -435,19 +435,19 @@ export class Simple extends EventEmitter {
     this.session.on("dtmf", (request: IncomingRequestMessage | OutgoingRequestMessage, dtmf: DTMF) => {
       this.emit("dtmf", dtmf.tone);
     });
-    this.session.on("bye", () => this.onEnded());
+    this.session.on("bye", (message) => this.onEnded(message, null));
   }
 
-  private onProgress(): void {
+  private onProgress(message: any): void {
     this.state = SimpleStatus.STATUS_CONNECTING;
     this.emit("connecting", this.session);
   }
 
-  private onFailed(): void {
-    this.onEnded();
+  private onFailed(response: any, cause: any): void {
+    this.onEnded(response, cause);
   }
 
-  private onEnded(): void {
+  private onEnded(response: any, cause: any): void {
     this.state = SimpleStatus.STATUS_COMPLETED;
     this.emit("ended", this.session);
     this.cleanupMedia();
