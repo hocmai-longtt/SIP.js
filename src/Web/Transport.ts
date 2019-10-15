@@ -8,6 +8,8 @@ import { TypeStrings } from "../Enums";
 import { Exceptions } from "../Exceptions";
 import { Utils } from "../Utils";
 
+import SocketIO from "./SocketIO";
+
 export enum TransportStatus {
   STATUS_CONNECTING,
   STATUS_OPEN,
@@ -51,7 +53,8 @@ export class Transport extends TransportBase {
   public static readonly C = TransportStatus;
   public type: TypeStrings;
   public server: WsServer;
-  public ws: WebSocket | undefined;
+  public ws: WebSocket | SocketIO | undefined;
+  public socket: any;
 
   private connectionPromise: Promise<any> | undefined;
   private connectDeferredResolve: ((obj: any) => void) | undefined;
@@ -199,7 +202,11 @@ export class Transport extends TransportBase {
       this.logger.log("connecting to WebSocket " + this.server.wsUri);
       this.disposeWs();
       try {
-        this.ws = new WebSocket(this.server.wsUri, "sip");
+        if (this.socket) {
+          this.ws = new SocketIO(this.socket);
+        } else {
+          this.ws = new WebSocket(this.server.wsUri, "sip");
+        }
       } catch (e) {
         this.ws = undefined;
         this.statusTransition(TransportStatus.STATUS_CLOSED, true);

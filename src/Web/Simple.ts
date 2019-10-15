@@ -104,14 +104,16 @@ export class Simple extends EventEmitter {
       // Undocumented "Advanced" Options
       userAgentString:   this.options.ua.userAgentString,
       // Fixed Options
-      hackWssInTransport: this.options.ua.hackWssInTransport || false,
-      forceRport: this.options.ua.forceRport || false,
-      register: this.options.ua.register || true,
+      hackWssInTransport: typeof(this.options.ua.hackWssInTransport) !== "undefined"
+      ? this.options.ua.hackWssInTransport : false,
+      forceRport: typeof(this.options.ua.forceRport) !== "undefined" ? this.options.ua.forceRport : false,
+      register: typeof(this.options.ua.register) !== "undefined" ? this.options.ua.register : true,
       sessionDescriptionHandlerFactoryOptions,
       transportOptions: {
         traceSip: this.options.ua.traceSip,
         wsServers: this.options.ua.wsServers
-      }
+      },
+      autostart: typeof(this.options.ua.autostart) !== "undefined" ? this.options.ua.autostart : true
     });
 
     this.state = SimpleStatus.STATUS_NULL;
