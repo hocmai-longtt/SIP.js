@@ -288,13 +288,13 @@ export class Simple extends EventEmitter {
     this.ua.message(destination, message);
   }
 
-  // Private Helpers
+  // protected Helpers
 
-  private checkRegistration(): boolean {
+  protected checkRegistration(): boolean {
     return (this.anonymous || (this.ua && this.ua.isRegistered()));
   }
 
-  private setupRemoteMedia(): void {
+  protected setupRemoteMedia(): void {
     if (!this.session) {
       this.logger.warn("No session to set remote media on");
       return;
@@ -327,7 +327,7 @@ export class Simple extends EventEmitter {
     }
   }
 
-  private setupLocalMedia(): void {
+  protected setupLocalMedia(): void {
     if (!this.session) {
       this.logger.warn("No session to set local media on");
       return;
@@ -352,7 +352,7 @@ export class Simple extends EventEmitter {
     }
   }
 
-  private cleanupMedia(): void {
+  protected cleanupMedia(): void {
     if (this.video) {
       this.options.media.remote.video.srcObject = null;
       this.options.media.remote.video.pause();
@@ -367,7 +367,7 @@ export class Simple extends EventEmitter {
     }
   }
 
-  private setupSession(): void {
+  protected setupSession(): void {
     if (!this.session) {
       this.logger.warn("No session to set up");
       return;
@@ -382,13 +382,13 @@ export class Simple extends EventEmitter {
     this.session.on("terminated", (message, cause) => this.onEnded(message, cause));
   }
 
-  private destroyMedia(): void {
+  protected destroyMedia(): void {
     if (this.session && this.session.sessionDescriptionHandler) {
       this.session.sessionDescriptionHandler.close();
     }
   }
 
-  private toggleMute(mute: boolean) {
+  protected toggleMute(mute: boolean) {
     if (!this.session) {
       this.logger.warn("No session to toggle mute");
       return;
@@ -412,7 +412,7 @@ export class Simple extends EventEmitter {
     }
   }
 
-  private onAccepted(response: any, cause: any): void {
+  protected onAccepted(response: any, cause: any): void {
     if (!this.session) {
       this.logger.warn("No session for accepting");
       return;
@@ -440,16 +440,16 @@ export class Simple extends EventEmitter {
     this.session.on("bye", (message) => this.onEnded(message, null));
   }
 
-  private onProgress(message: any): void {
+  protected onProgress(message: any): void {
     this.state = SimpleStatus.STATUS_CONNECTING;
     this.emit("connecting", this.session);
   }
 
-  private onFailed(response: any, cause: any): void {
+  protected onFailed(response: any, cause: any): void {
     this.onEnded(response, cause);
   }
 
-  private onEnded(response: any, cause: any): void {
+  protected onEnded(response: any, cause: any): void {
     this.state = SimpleStatus.STATUS_COMPLETED;
     this.emit("ended", this.session);
     this.cleanupMedia();
