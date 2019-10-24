@@ -1,4 +1,5 @@
 import { EventEmitter } from "events";
+import { Logger } from "../core";
 
 /**
  * @class SocketIO
@@ -7,9 +8,11 @@ import { EventEmitter } from "events";
 export default class SocketIO extends EventEmitter {
 
   private socket: any;
+  private logger: Logger;
 
-  constructor(socket: any) {
+  constructor(logger: Logger, socket: any) {
     super();
+    this.logger = logger;
     this.socket = socket;
 
     this.socket.on("rtc.open", () => {
@@ -24,13 +27,22 @@ export default class SocketIO extends EventEmitter {
       this.socket.emit("rtc.open");
     });
 
+    this.socket.on("ping", () => {
+      this.logger.log("socket ping");
+    });
+    this.socket.on("pong", () => {
+      this.logger.log("socket pong");
+    });
+
     if (this.socket.connected) {
       this.socket.emit("rtc.open");
     }
   }
 
   public send(message: any): void {
-    this.socket.emit("rtc.message", message);
+    this.socket.emit("rtc.message", {
+      data: message
+    });
   }
 
   public close(code: any, reason?: any): void {

@@ -203,7 +203,7 @@ export class Transport extends TransportBase {
       this.disposeWs();
       try {
         if (this.socket) {
-          this.ws = new SocketIO(this.socket);
+          this.ws = new SocketIO(this.logger, this.socket);
         } else {
           this.ws = new WebSocket(this.server.wsUri, "sip");
         }
